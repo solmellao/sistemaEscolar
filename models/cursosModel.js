@@ -1,28 +1,36 @@
-const db = require('./../config/db');
-const { Router } = require("express");
+const sequelize = require("sequelize");
+//es para definir el modelo
+module.exports = function(sequelize,Datatypes){
+    return sequelize.define ("cursos", {
+        id : {
+            type: Datatypes.INTEGER(),
+            primaryKey: true,
+            autoIncrement: true
+        },
+        nombre: {
+            type: Datatypes.STRING(50),
+            allowNull: false  //me permite poder señalar si puede ser nulo , una forma de validacion
+        },
+        descripcion: {
+            type: Datatypes.TEXT('long'), //para guardar texto largo
+            allowNull: false            
+        }
+    }, {
+        sequelize,
+        tableName: "cursos",
+        timestamps: false,   //crea dos campos por defecto created_at y updated_at
+        indexes: [ // configura los indices de la tabla usuarios, (si tiene clave primaria,foranea,etc)
+            {
+                name: "PRIMARY",
+                unique: true,
+                using: "BTREE",
+                fields: [
+                    { name: "id" 
+                    }
+                ]
+            }            
 
-exports.obtenerCursos = async () => {
-    const [rows, fiels] = await db.execute('SELECT * FROM cursos')
-    console.log(rows)
-    return rows;
-};
-
-exports.getCursosById = async (idCurso) => {
-    const [rows, fields] = await db.execute('SELECT nombre, descripcion FROM cursos WHERE id=?', [idCurso]);
-    console.log(rows)
-    return rows;
-};
-
-exports.agregarCursos = async (cursos) => {
-    const [rows, fields] = await db.execute('INSERT INTO cursos (nombre, descripcion) VALUES (?, ?, ?)', [cursos.nombre,cursos.descripcion ]);
-    return rows;
-};
-exports.actualizarCursos = async(cursos)=>{
-    const [rows, fields] = await db.execute('UPDATE cursos SET nombre = ?, descripcion = ? WHERE id = ?', [cursos.nombre,cursos.descripcion, cursos.cursosData]);
-    return rows;
-};
-
-exports.eliminarCursosById = async (id) =>{
-    const [rows, fields] = await db.execute('DELETE FROM cursos WHERE id = ?', [id])
-    return rows;
-};
+        ]
+    }
+    )
+}

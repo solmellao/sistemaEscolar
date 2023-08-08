@@ -1,29 +1,28 @@
 const express = require ('express')
 const router = express.Router();
-const cursosController = require ('./../controllers/cursosController');
-const { validarCampos } = require('../middlewares/validar-campos');
-const {agregarCursos} = require('../models/cursosModel');
+const cursoController = require ('../controller/cursoController');
+const validacion = require('../middleware/validacion');
 const {check} = require ('express-validator');
 // definimos las rutas y derivamos al controlador que le corresponde.
 
-router.get('/', cursosController.obtenerCursos);
-router.get('/:id', cursosController.getCursosById);
-router.delete('/:id',cursosController.eliminarCursosById)
+router.get('/', validacion, cursoController.getAll);//ejecuta una funcion antes de ir al controlador
+router.get('/:id', validacion, cursoController.getOne);
+router.delete('/:id', validacion, cursoController.Delete);
 
 router.post('/',
 [
-    check('Nombre', 'es obligatorio').not ().isEmpty(),
-    check('Descripcion', 'es obligatoria').not ().isEmpty(),
-    validarCampos
+    validacion,
+    check('nombre', 'es obligatorio').not().isEmpty(),
+    check('descripcion', 'es obligatoria').not ().isEmpty(),
 ]
-, cursosController.agregarCursos);
+, cursoController.create);
 
 router.put('/:id',
 [
-    check('Nombre', 'campo obligatorio').not ().isEmpty(),
-    check('Descripcion', 'campo obligatoria').not ().isEmpty(),
-    validarCampos
+    validacion,
+    check('nombre', 'campo obligatorio').not ().isEmpty(),
+    check('descripcion', 'campo obligatoria').not ().isEmpty(),
 ]
-, cursosController.actualizarCursos);
+, cursoController.update);
 
 module.exports = router;

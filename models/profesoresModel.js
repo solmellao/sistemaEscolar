@@ -1,28 +1,40 @@
-const db = require('../config/db');
-const { Router } = require("express");
+const sequelize = require("sequelize");
+//es para definir el modelo
+module.exports = function(sequelize,Datatypes){
+    return sequelize.define ("profesores", {
+        id : {
+            type: Datatypes.INTEGER(),
+            primaryKey: true,
+            autoIncrement: true
+        },
+        nombre: {
+            type: Datatypes.STRING(50),
+            allowNull: false  //me permite poder señalar si puede ser nulo , una forma de validacion
+        },
+        especialidad: {
+            type: Datatypes.TEXT('long'), //para guardar texto largo
+            allowNull: false            
+        },
+        email: {
+            type: Datatypes.TEXT('long'), //para guardar texto largo
+            allowNull: false            
+        }
+    }, {
+        sequelize,
+        tableName: "profesores",
+        timestamps: false,   //crea dos campos por defecto created_at y updated_at
+        indexes: [ // configura los indices de la tabla profesores, (si tiene clave primaria,foranea,etc)
+            {
+                name: "PRIMARY",
+                unique: true,
+                using: "BTREE",
+                fields: [
+                    { name: "id" 
+                    }
+                ]
+            }            
 
-exports.obtenerProfesores = async () => {
-    const [rows, fiels] = await db.execute('SELECT * FROM profesores')
-    console.log(rows)
-    return rows;
-};
-
-exports.getProfesoresById = async (idProfesor) => {
-    const [rows, fields] = await db.execute('SELECT nombre, especialidad, mail FROM profesores WHERE id=?', [idProfesor]);
-    console.log(rows)
-    return rows;
-};
-
-exports.agregarProfesores = async (profesores) => {
-    const [rows, fields] = await db.execute('INSERT INTO profesores (nombre, especialidad, mail) VALUES (?, ?, ?)', [profesores.nombre,profesores.especialidad, profesores.mail]);
-    return rows;
-};
-exports.actualizarProfesores = async(profesores)=>{
-    const [rows, fields] = await db.execute('UPDATE profesores SET nombre = ?, especialidad = ?, email = ? WHERE id = ?', [profesores.nombre, profesores.especialidad, profesores.email, profesores.profesoresData]);
-    return rows;
-};
-
-exports.eliminarProfesoresById = async (id) =>{
-    const [rows, fields] = await db.execute('DELETE FROM profesores WHERE id = ?', [id])
-    return rows;
-};
+        ]
+    }
+    )
+}
